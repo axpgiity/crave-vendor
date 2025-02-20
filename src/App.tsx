@@ -7,7 +7,7 @@ import { AuthForm } from "./components/Forms/AuthForm";
 
 import { Summary } from "./pages/Summary";
 import { OrdersHistory } from "./pages/OrdersHistory";
-// import { MenuPage } from "./pages/MenuPage";
+import { MenuPage } from "./pages/MenuPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SignupForm } from "./components/Forms/SignUpForm";
 
@@ -22,9 +22,9 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // if (!user) {
-  //   return <Navigate to="/auth" />;
-  // }
+  if (!user) {
+    return <Navigate to="/auth" />;
+  }
 
   return <>{children}</>;
 }
@@ -46,10 +46,7 @@ function App() {
             <Route index element={<Summary />} />
             <Route path="register" element={<SignupForm />} />
             <Route path="history" element={<OrdersHistory />} />
-            {/*<Route
-              path="menu"
-              element={<MenuPage />}
-            /> */}
+            <Route path="menu" element={<MenuPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Routes>

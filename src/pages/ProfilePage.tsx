@@ -31,20 +31,11 @@ export function ProfilePage() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData?.user) return;
 
-      const { data: shopData, error: shopError } = await supabase
-        .from("vendors")
-        .select("userid")
-        .eq("userid", userData.user.id)
-        .single();
-
-      if (shopError) throw shopError;
-      const shopId = shopData.userid;
-
       // Fetch shop details using shop ID
       const { data, error } = await supabase
         .from("vendors")
         .select("*")
-        .eq("userid", shopId)
+        .eq("userid", userData.user.id)
         .single();
 
       if (error) {
@@ -76,11 +67,41 @@ export function ProfilePage() {
           phone: data.phone,
         };
         setShopDetails(transformedData);
-        setEditForm(data);
+        setEditForm(transformedData);
       }
     } catch (error: any) {
       console.error("Error fetching shop details:", error);
       toast.error("Failed to fetch shop details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateShopDetails = async () => {
+    try {
+      setLoading(true);
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) return;
+
+      const { error } = await supabase
+        .from("vendors")
+        .update({
+          name: editForm.name,
+          image: editForm.image,
+          location: editForm.location,
+          phone: editForm.phone,
+        })
+        .eq("userid", userData.user.id);
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Shop details updated successfully");
+      fetchShopDetails();
+    } catch (error: any) {
+      console.error("Error updating shop details:", error);
+      toast.error("Failed to update shop details");
     } finally {
       setLoading(false);
     }
@@ -103,12 +124,14 @@ export function ProfilePage() {
         <div className="space-y-6">
           <div className="grid gap-6">
             {editForm.image && (
-              <div className="mt-2">
-                <img
-                  src={editForm.image}
-                  alt="Vendor"
-                  className="w-full h-auto rounded-right  align-left"
-                />
+              <div className="mt-2 flex justify-center">
+                <div className="w-72 h-52 rounded-lg overflow-hidden shadow-lg">
+                  <img
+                    src={editForm.image}
+                    alt="Vendor"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             )}
 
@@ -141,7 +164,7 @@ export function ProfilePage() {
                 </span>
                 <input
                   type="text"
-                  value={shopDetails?.description || ""}
+                  value={editForm?.description || ""}
                   onChange={(e) =>
                     setEditForm({ ...editForm, description: e.target.value })
                   }
@@ -230,7 +253,10 @@ export function ProfilePage() {
           </div>
 
           <div>
-            <button className="w-full text-white py-2 px-4 rounded-md bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2">
+            <button
+              className="w-full text-white py-2 px-4 rounded-md bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2"
+              onClick={updateShopDetails}
+            >
               Save Changes
             </button>
           </div>

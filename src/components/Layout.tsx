@@ -16,7 +16,14 @@ export function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundImage: "url('/src/assets/homebg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <nav className="bg-white shadow-md border-b border-orange-200">
         {/*Large Screen */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,7 +103,6 @@ export function Layout() {
           </div>
         )}
       </nav>
-
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <Outlet />
       </main>
