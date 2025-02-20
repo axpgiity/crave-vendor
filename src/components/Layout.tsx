@@ -24,8 +24,7 @@ export function Layout() {
         backgroundPosition: "center",
       }}
     >
-      <nav className="bg-white shadow-md border-b border-orange-200">
-        {/*Large Screen */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md border-b border-orange-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -37,11 +36,15 @@ export function Layout() {
                     className="h-12 w-12 rounded-full"
                   />
                 </div>
-                <span className="ml-3 text-xl font-bold bg-gradient-to-r from-orange-500 to-orange-500 bg-clip-text text-transparent">
+                <Link
+                  to="/"
+                  className="ml-3 text-xl font-bold bg-gradient-to-r from-orange-500 to-orange-500 bg-clip-text text-transparent"
+                >
                   Crave
-                </span>
+                </Link>
               </div>
 
+              {/*Large Screen */}
               <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
                 {navLinks.map(({ path, label }) => (
                   <Link
@@ -103,7 +106,7 @@ export function Layout() {
           </div>
         )}
       </nav>
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 mt-16">
         <Outlet />
       </main>
     </div>

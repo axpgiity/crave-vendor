@@ -125,7 +125,7 @@ export function ProfilePage() {
           <div className="grid gap-6">
             {editForm.image && (
               <div className="mt-2 flex justify-center">
-                <div className="w-72 h-52 rounded-lg overflow-hidden shadow-lg">
+                <div className="w-full h-52 rounded-lg overflow-hidden shadow-lg">
                   <img
                     src={editForm.image}
                     alt="Vendor"
