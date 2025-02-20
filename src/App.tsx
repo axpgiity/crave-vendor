@@ -50,20 +50,7 @@ function App() {
               path="menu"
               element={<MenuPage />}
             /> */}
-            <Route
-              path="profile"
-              element={
-                <ProfilePage
-                  profile={{
-                    name: "",
-                    description: "",
-                    openingHours: "",
-                    phone: "",
-                  }}
-                  onProfileChange={(profile) => console.log(profile)}
-                />
-              }
-            />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Routes>
       </BrowserRouter>
