@@ -16,14 +16,7 @@ export function Layout() {
   ];
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundImage: "url('/src/assets/homebg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md border-b border-orange-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
