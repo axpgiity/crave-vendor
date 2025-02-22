@@ -1,26 +1,32 @@
-import React from 'react';
-import { Order } from '../../types';
-import { OrderItem } from './OrderItem';
+import React from "react";
+import { Order } from "../../types";
+import { OrderItem } from "./OrderItem";
 
 interface OrderListProps {
   orders: Order[];
-  onUpdateStatus: (orderId: number, status: Order['status']) => void;
+  onUpdateStatus: (orderId: number, status: Order["status"]) => void;
 }
 
-export const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus }) => {
-  // Filter out completed orders
-  const activeOrders = orders.filter(order => order.status !== 'completed');
+export const OrderList: React.FC<OrderListProps> = ({
+  orders,
+  onUpdateStatus,
+}) => {
+  const activeOrders = orders.filter((order) => order.status !== "completed");
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Active Orders</h2>
-      <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-        <ul role="list" className="divide-y divide-gray-200">
-          {activeOrders.map(order => (
-            <OrderItem key={order.id} order={order} onUpdateStatus={onUpdateStatus} />
-          ))}
-        </ul>
+      <div className="bg-white p-4 shadow sm:rounded-lg">
+        <h2 className="text-2xl font-bold text-orange-600">Active Orders</h2>
       </div>
+      <ul role="list" className="space-y-2">
+        {activeOrders.map((order) => (
+          <OrderItem
+            key={order.id}
+            order={order}
+            onUpdateStatus={onUpdateStatus}
+          />
+        ))}
+      </ul>
     </div>
   );
 };

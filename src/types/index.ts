@@ -22,18 +22,30 @@ export interface MenuItemFormData {
 
 export interface Order {
   id: number;
-  status: "pending" | "confirmed" | "rejected" | "completed" | "preparing" | "ready";
+  status: "pending" | "confirmed" |"preparing" |"ready"| "rejected" | "completed";
   total_price: number;
-  needed_by: string;
+  customer_id: string | null;
+  customer: string;
+  pick_up_time: string;
   created_at: string;
-  customer_name: string | null;
-  customer_contact: string | null;
-  items: Array<{
+  vendor_id: string;
+  items: OrderItem[];
+}
+
+export interface OrderItem {
+  quantity: number;
+  price: number;
+  item: {
+    id: number;
     name: string;
-    quantity: number;
-  }>;
-  total: number;
-  timestamp: string;
+    veg: boolean;
+  };
+}
+
+export interface CustomerDetails {
+  customer_id: string;
+  full_name: string;
+  phonenumber: string;
 }
 
 export interface ShopDetails {

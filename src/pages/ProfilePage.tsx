@@ -10,6 +10,7 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [shopDetails, setShopDetails] = useState<ShopDetails | null>(null);
   const [showEditProfile, setShowEditProfile] = useState(false);
+
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
@@ -35,7 +36,7 @@ export function ProfilePage() {
       const { data, error } = await supabase
         .from("vendors")
         .select("*")
-        .eq("userid", userData.user.id)
+        .eq("user_id", userData.user.id)
         .single();
 
       if (error) {
@@ -44,7 +45,7 @@ export function ProfilePage() {
           const { data: newShop, error: createError } = await supabase
             .from("vendor")
             .insert({
-              userid: userData.user.id,
+              user_id: userData.user.id,
               name: "",
               location: "",
             })
@@ -91,7 +92,7 @@ export function ProfilePage() {
           location: editForm.location,
           phone: editForm.phone,
         })
-        .eq("userid", userData.user.id);
+        .eq("user_id", userData.user.id);
 
       if (error) {
         throw error;
@@ -118,7 +119,7 @@ export function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
       <div className="px-4 py-5 sm:p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl font-bold text-orange-600 mb-6">
           Vendor Profile
         </h2>
         <div className="space-y-6">
