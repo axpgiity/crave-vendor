@@ -25,7 +25,7 @@ export function Layout() {
                 <div className="flex justify-center">
                   <img
                     src="/src/assets/Logo.png"
-                    alt="Logo"
+                    alt="Logo?"
                     className="h-12 w-12 rounded-full"
                   />
                 </div>
