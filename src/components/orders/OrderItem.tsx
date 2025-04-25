@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Order } from "../../types";
 import { OrderStatusButtons } from "./OrderStatusButtons";
+import { useActionData } from "react-router-dom";
 
 interface OrderItemProps {
   order: Order;
@@ -11,6 +12,9 @@ export const OrderItem: React.FC<OrderItemProps> = ({
   order,
   onUpdateStatus,
 }) => {
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
       case "pending":
@@ -24,6 +28,60 @@ export const OrderItem: React.FC<OrderItemProps> = ({
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  useEffect(() => {
+    if (order.status === "preparing") {
+      const currentTime = Date.now();
+      const endTime = currentTime + Number(order.pick_up_time) * 60 * 1000; // Convert minutes to milliseconds
+      localStorage.setItem(`order_${order.id}_endTime`, endTime.toString());
+
+      const updateTimer = () => {
+        const remainingTime = Math.max(
+          0,
+          Math.floor((endTime - Date.now()) / 1000)
+        ); // Remaining time in seconds
+        setTimer(remainingTime);
+
+        if (remainingTime <= 0) {
+          clearInterval(intervalId!);
+          localStorage.removeItem(`order_${order.id}_endTime`);
+        }
+      };
+
+      updateTimer(); // Initialize the timer immediately
+      const id = setInterval(updateTimer, 1000);
+      setIntervalId(id);
+    } else {
+      // Clear the timer and remove the stored end time
+      if (intervalId) {
+        clearInterval(intervalId);
+        setIntervalId(null);
+      }
+      setTimer(0);
+      localStorage.removeItem(`order_${order.id}_endTime`);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [order.status, order.pick_up_time]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const getTimerBoxColor = () => {
+    if (timer <= 120) {
+      return "bg-red-100 text-red-800 border-red-500";
+    }
+    return "bg-green-100 text-green-800 border-green-500";
   };
 
   return (
@@ -41,7 +99,15 @@ export const OrderItem: React.FC<OrderItemProps> = ({
             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
           </span>
         </div>
-        <span className="text-sm text-gray-500">{order.pick_up_time}</span>
+        <span className="text-sm text-gray-500">
+          {order.status === "preparing" && (
+            <div
+              className={`inline-block px-3 py-1 rounded-lg border text-sm font-medium ${getTimerBoxColor()}`}
+            >
+              Timer: {formatTime(timer)}
+            </div>
+          )}
+        </span>{" "}
       </div>
       <div className="mt-4">
         <table className="min-w-full divide-y divide-gray-200">
