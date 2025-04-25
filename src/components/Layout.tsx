@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Package, LogOut, User, Pill, Truck, Menu } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import Logo from "../assets/Logo.png";
 
 export function Layout() {
   const location = useLocation();
@@ -24,7 +25,7 @@ export function Layout() {
               <div className="flex-shrink-0 flex items-center">
                 <div className="flex justify-center">
                   <img
-                    src="/src/assets/Logo.png"
+                    src={Logo}
                     alt="Logo?"
                     className="h-12 w-12 rounded-full"
                   />
