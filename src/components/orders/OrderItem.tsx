@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Order } from "../../types";
 import { OrderStatusButtons } from "./OrderStatusButtons";
-import { useActionData } from "react-router-dom";
 
 interface OrderItemProps {
   order: Order;
@@ -13,7 +12,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
   onUpdateStatus,
 }) => {
   const [timer, setTimer] = useState(0);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
@@ -30,43 +29,67 @@ export const OrderItem: React.FC<OrderItemProps> = ({
     }
   };
 
+  const clearTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const startCountdown = (endTime: number) => {
+    clearTimer(); // prevent duplicates
+
+    const updateTimer = () => {
+      const remainingTime = Math.max(
+        0,
+        Math.floor((endTime - Date.now()) / 1000)
+      );
+      setTimer(remainingTime);
+
+      if (remainingTime <= 0) {
+        clearTimer();
+        localStorage.removeItem(`order_${order.id}_endTime`);
+      }
+    };
+
+    updateTimer();
+    intervalRef.current = setInterval(updateTimer, 1000);
+  };
+
+  // Initialize on mount
+  useEffect(() => {
+    const storedEndTime = localStorage.getItem(`order_${order.id}_endTime`);
+    if (storedEndTime) {
+      const endTime = parseInt(storedEndTime, 10);
+      const remaining = Math.floor((endTime - Date.now()) / 1000);
+      if (remaining > 0) {
+        setTimer(remaining);
+        startCountdown(endTime);
+      } else {
+        localStorage.removeItem(`order_${order.id}_endTime`);
+      }
+    }
+
+    return clearTimer;
+  }, []);
+
+  // Watch for status change
   useEffect(() => {
     if (order.status === "preparing") {
-      const currentTime = Date.now();
-      const endTime = currentTime + Number(order.pick_up_time) * 60 * 1000; // Convert minutes to milliseconds
-      localStorage.setItem(`order_${order.id}_endTime`, endTime.toString());
-
-      const updateTimer = () => {
-        const remainingTime = Math.max(
-          0,
-          Math.floor((endTime - Date.now()) / 1000)
-        ); // Remaining time in seconds
-        setTimer(remainingTime);
-
-        if (remainingTime <= 0) {
-          clearInterval(intervalId!);
-          localStorage.removeItem(`order_${order.id}_endTime`);
-        }
-      };
-
-      updateTimer(); // Initialize the timer immediately
-      const id = setInterval(updateTimer, 1000);
-      setIntervalId(id);
-    } else {
-      // Clear the timer and remove the stored end time
-      if (intervalId) {
-        clearInterval(intervalId);
-        setIntervalId(null);
+      const existingEndTime = localStorage.getItem(`order_${order.id}_endTime`);
+      if (!existingEndTime) {
+        const endTime = Date.now() + Number(order.pick_up_time) * 60 * 1000;
+        localStorage.setItem(`order_${order.id}_endTime`, endTime.toString());
+        startCountdown(endTime);
       }
+    } else {
+      // Not preparing anymore
+      clearTimer();
       setTimer(0);
       localStorage.removeItem(`order_${order.id}_endTime`);
     }
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
+    return clearTimer;
   }, [order.status, order.pick_up_time]);
 
   const formatTime = (seconds: number) => {
@@ -99,15 +122,13 @@ export const OrderItem: React.FC<OrderItemProps> = ({
             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
           </span>
         </div>
-        <span className="text-sm text-gray-500">
-          {order.status === "preparing" && (
-            <div
-              className={`inline-block px-3 py-1 rounded-lg border text-sm font-medium ${getTimerBoxColor()}`}
-            >
-              Timer: {formatTime(timer)}
-            </div>
-          )}
-        </span>{" "}
+        {order.status === "preparing" && (
+          <div
+            className={`inline-block px-3 py-1 rounded-lg border text-sm font-medium ${getTimerBoxColor()}`}
+          >
+            Timer: {formatTime(timer)}
+          </div>
+        )}
       </div>
       <div className="mt-4">
         <table className="min-w-full divide-y divide-gray-200">
