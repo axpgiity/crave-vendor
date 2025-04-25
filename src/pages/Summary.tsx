@@ -10,7 +10,26 @@ export function Summary() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch initial orders
     fetchOrders();
+
+    // Set up a real-time subscription to the orders table
+    const subscription = supabase
+      .channel("orders-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        (payload) => {
+          console.log("Change received:", payload);
+          fetchOrders(); // Re-fetch orders whenever a change occurs
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   async function fetchOrders() {
