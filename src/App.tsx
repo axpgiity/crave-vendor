@@ -10,6 +10,7 @@ import { OrdersHistory } from "./pages/OrdersHistory";
 import { MenuPage } from "./pages/MenuPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SignupForm } from "./components/Forms/SignUpForm";
+import HomePage from "./pages/HomePage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -23,7 +24,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/auth" />;
+    return <Navigate to="/home" replace />;
   }
 
   return <>{children}</>;
@@ -34,6 +35,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/home" element={<HomePage />} />
           <Route path="/auth" element={<AuthForm />} />
           <Route
             path="/"
@@ -46,7 +48,7 @@ function App() {
             <Route index element={<Summary />} />
             <Route path="register" element={<SignupForm />} />
             <Route path="history" element={<OrdersHistory />} />
-            <Route path="menu" element={<MenuPage />} />
+            {/* <Route path="menu" element={<MenuPage />} /> */}
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Routes>

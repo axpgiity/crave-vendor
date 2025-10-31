@@ -52,26 +52,22 @@ export function Summary() {
         .from("orders")
         .select(
           `
-            order_id,
-            status,
-            total_price,
-            pick_up_time,
-            created_at,
-            customer_details (
-              customer_id,
-              full_name,
-              phonenumber
-            ),
-            order_items (
-              quantity,
-              price,
-              items (
-                item_id,
-                item_name,
-                veg
-              )
+          order_id,
+          status,
+          total_price,
+          pick_up_time,
+          created_at,
+          customer_id, 
+          order_items (
+            quantity,
+            price,
+            items (
+              item_id,
+              item_name,
+              veg
             )
-          `
+          )
+        `
         )
         .neq("status", "completed")
         .eq("vendor_id", vendor.vendor_id)
@@ -89,7 +85,9 @@ export function Summary() {
           status: order.status,
           total_price: parseFloat(order.total_price),
           pick_up_time: order.pick_up_time,
-          timestamp: order.created_at,
+          created_at: order.created_at,
+          customer_id: order.customer_id,
+          vendor_id: order.vendor_id,
           items: order.order_items.map((item: any) => ({
             quantity: item.quantity,
             price: parseFloat(item.price),

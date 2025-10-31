@@ -25,7 +25,6 @@ export interface Order {
   status: "pending" | "confirmed" |"preparing" |"ready"| "rejected" | "completed";
   total_price: number;
   customer_id: string | null;
-  customer: string;
   pick_up_time: string;
   created_at: string;
   vendor_id: string;

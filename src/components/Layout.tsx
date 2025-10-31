@@ -12,7 +12,6 @@ export function Layout() {
   const navLinks = [
     { path: "/", label: "Summary", icon: Package },
     { path: "/history", label: "History", icon: Pill },
-    { path: "/menu", label: "Menu", icon: Truck },
     { path: "/profile", label: "Profile", icon: User },
   ];
 

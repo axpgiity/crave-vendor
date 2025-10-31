@@ -42,11 +42,7 @@ export function OrdersHistory() {
           total_price,
           pick_up_time,
           created_at,
-          customer_details (
-            customer_id,
-            full_name,
-            phonenumber
-          ),
+          customer_id, 
           order_items (
             quantity,
             price,
@@ -68,13 +64,16 @@ export function OrdersHistory() {
         return;
       }
 
+      console.log(ordersData);
       if (ordersData) {
-        const transformedOrders = ordersData.map((order: any) => ({
+        const transformedData = ordersData.map((order: any) => ({
           id: order.order_id,
           status: order.status,
           total_price: parseFloat(order.total_price),
           pick_up_time: order.pick_up_time,
-          timestamp: order.created_at,
+          created_at: order.created_at,
+          customer_id: order.customer_id,
+          vendor_id: vendor.vendor_id,
           items: order.order_items.map((item: any) => ({
             quantity: item.quantity,
             price: parseFloat(item.price),
@@ -86,7 +85,7 @@ export function OrdersHistory() {
           })),
         }));
 
-        setOrders(transformedOrders);
+        setOrders(transformedData);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -97,11 +96,15 @@ export function OrdersHistory() {
   }
 
   const filteredOrders = orders.filter((order) => {
+    if (!searchTerm && !dateFilter) {
+      return true; // Return all orders if no filters are applied
+    }
+
     const matchesSearch = order.items.some((item) =>
       item.item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const matchesDate = dateFilter
-      ? new Date(order.timestamp).toLocaleDateString() ===
+      ? new Date(order.pick_up_time).toLocaleDateString() ===
         new Date(dateFilter).toLocaleDateString()
       : true;
 
@@ -178,7 +181,7 @@ export function OrdersHistory() {
                   </span>
                 </div>
                 <span className="text-sm text-gray-500">
-                  {new Date(order.timestamp).toLocaleString()}
+                  Created at {order.created_at.toString().split("T")[0]}
                 </span>
               </div>
 
